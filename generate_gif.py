@@ -6,14 +6,12 @@ from PIL import Image
 def generate_gif(
     image_paths, output_path, duration=500, fade_frames=10, fade_duration=100
 ):
-    # Load images and convert to RGBA
+
     images = [Image.open(img).convert("RGBA") for img in image_paths]
 
-    # Find max width and height
     max_w = max(img.width for img in images)
     max_h = max(img.height for img in images)
 
-    # Center images on a common canvas
     centered = []
     for img in images:
         canvas = Image.new("RGBA", (max_w, max_h), (0, 0, 0, 0))
@@ -22,13 +20,12 @@ def generate_gif(
         canvas.paste(img, (x, y), img)
         centered.append(canvas)
 
-    # Build frames with cross-fade transitions
     frames = [centered[0]]
     durations = [duration]
     for i in range(1, len(centered)):
         prev = centered[i - 1]
         curr = centered[i]
-        # Fade from prev to curr
+
         for f in range(1, fade_frames + 1):
             alpha = f / (fade_frames + 1)
             blended = Image.blend(prev, curr, alpha)
@@ -37,7 +34,6 @@ def generate_gif(
         frames.append(curr)
         durations.append(duration)
 
-    # Convert all frames to P mode for GIF
     frames = [f.convert("P", dither=Image.NONE, palette=Image.ADAPTIVE) for f in frames]
 
     frames[0].save(
@@ -60,11 +56,11 @@ if __name__ == "__main__":
         sys.exit(1)
     output_gif = sys.argv[1]
     duration = int(sys.argv[2])
-    # Separate image files and fade_frames/fade_duration robustly
+
     possible_images = sys.argv[3:]
     fade_frames = 10
     fade_duration = 100
-    # If the last argument is an integer, treat as fade_duration
+
     if (
         len(possible_images) > 1
         and possible_images[-1].isdigit()
@@ -78,7 +74,7 @@ if __name__ == "__main__":
         image_files = possible_images[:-1]
     else:
         image_files = possible_images
-    # Filter out any accidental non-image arguments
+
     valid_exts = (".jpg", ".jpeg", ".png", ".bmp", ".gif")
     image_files = [f for f in image_files if f.lower().endswith(valid_exts)]
     if not image_files:
