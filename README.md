@@ -1,3 +1,46 @@
+# Google Cloud Functions Deployment
+
+## Clean Project Structure
+
+Your deployment root should look like this:
+
+```
+main.py
+requirements.txt
+README.md
+```
+
+For local testing and legacy scripts, use the `local/` folder:
+
+```
+local/generate_gif.py
+local/sample/
+```
+
+## Deploy Command
+
+To deploy your GIF generator as a Google Cloud Function, run:
+
+```
+gcloud functions deploy generate_gif_http --runtime python311 --trigger-http --allow-unauthenticated --entry-point generate_gif_http
+```
+
+This will make your function available via a public HTTP endpoint.
+
+## Usage
+
+Send a POST request with JSON:
+
+```
+{
+	"images": ["<base64_image1>", "<base64_image2>", ...],
+	"duration": 100,
+	"fade_frames": 10,
+	"fade_duration": 50
+}
+```
+
+The response will contain a base64-encoded GIF.
 # GIF Generator
 
 A Python script to generate animated GIFs from a sequence of images, with smooth cross-fade transitions and customizable frame durations.
